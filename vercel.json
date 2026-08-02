@@ -1,1 +1,8 @@
-
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/absensi-pondok-al-adalah.html"
+    }
+  ]
+}
