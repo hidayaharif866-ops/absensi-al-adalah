@@ -1,0 +1,37 @@
+{
+  "name": "Absensi Pondok Pesantren Al-Adalah",
+  "short_name": "Absensi Al-Adalah",
+  "description": "Aplikasi absensi santri Pondok Pesantren Al-Adalah",
+  "start_url": "./absensi-pondok-al-adalah.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F6F3EA",
+  "theme_color": "#0B4F3F",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
