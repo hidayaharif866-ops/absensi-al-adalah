@@ -8,11 +8,11 @@
 <!-- PWA: manifest & icon -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0B4F3F">
-<link rel="icon" type="image/png" sizes="512x512" href="icons-512.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icons-192.png">
-<link rel="icon" type="image/png" sizes="32x32" href="icons-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="icons-16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="icons-180-apple.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180-apple.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Absensi Al-Adalah">
@@ -191,6 +191,11 @@
     font-size: 13.5px; color: var(--text); background: #FBFAF6; outline:none;
   }
   .field input:focus{ border-color: var(--primary); }
+  .field select{
+    width:100%; padding: 11px 13px; border-radius: 12px; border: 1.5px solid var(--line);
+    font-size: 13.5px; color: var(--text); background: #FBFAF6; outline:none; appearance:none;
+  }
+  .field select:focus{ border-color: var(--primary); }
   .form-card .btn-add{
     background: var(--primary-dark); color:#fff; border:none; border-radius: 12px; padding: 12px 22px;
     font-weight:700; font-size:13.5px; display:flex; align-items:center; gap:8px;
@@ -213,6 +218,15 @@
     padding: 8px 10px; display:flex; align-items:center; justify-content:center;
   }
   .btn-del svg{ width:15px; height:15px; stroke: var(--alpha); }
+
+  /* ---------- Mapel picker (Absensi) ---------- */
+  .mapel-picker{ margin-bottom:16px; }
+  .mapel-picker label{ font-size:11.5px; font-weight:700; color: var(--text-soft); display:block; margin-bottom:6px; }
+  .mapel-picker select{
+    width:100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--line);
+    font-size: 14px; font-weight:700; color: var(--primary-dark); background: var(--primary-tint); outline:none; appearance:none;
+  }
+  .tag-mapel{ display:inline-block; font-size:11px; font-weight:800; background: var(--gold-soft); color:#6B5510; padding:4px 11px; border-radius:20px; }
 
   /* ---------- Riwayat ---------- */
   .riwayat-card{ background: var(--surface); border:1px solid var(--line); border-radius: var(--radius-md); padding: 15px 17px; margin-bottom: 12px; }
@@ -276,6 +290,10 @@
       <svg viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke-width="1.7" stroke-linecap="round"/></svg>
       Data Santri
     </button>
+    <button class="tab" data-tab="mapel" onclick="navigateTo('mapel')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Mata Pelajaran
+    </button>
     <button class="tab" data-tab="riwayat" onclick="navigateTo('riwayat')">
       <svg viewBox="0 0 24 24" fill="none"><path d="M3 3v5h5M3.05 13a9 9 0 106.36-8.86M12 7v5l3 3" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Riwayat
@@ -332,6 +350,12 @@
       <h3>Absensi Santri</h3>
       <span class="badge" id="absenDateBadge">Hari ini</span>
     </div>
+    <div class="mapel-picker">
+      <label>Mata Pelajaran</label>
+      <select id="selectMapel" onchange="onMapelChange()">
+        <option value="">Pilih mata pelajaran...</option>
+      </select>
+    </div>
     <div class="search-wrap">
       <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       <input id="searchSantri" type="text" placeholder="Cari nama santri..." oninput="renderSantriList()">
@@ -374,6 +398,25 @@
     <div id="santriManageList"></div>
   </section>
 
+  <!-- MATA PELAJARAN -->
+  <section class="screen" id="screen-mapel">
+    <div class="form-card">
+      <div class="eyebrow">Mata Pelajaran</div>
+      <h3>Tambah Mata Pelajaran</h3>
+      <div class="field" style="max-width:420px; margin-bottom:14px;">
+        <label>Nama Mata Pelajaran</label>
+        <input id="inputMapel" type="text" placeholder="Contoh: Fiqih">
+      </div>
+      <button class="btn-add" onclick="addMapel()">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Tambah Mata Pelajaran
+      </button>
+    </div>
+
+    <div class="section-title"><h3>Daftar Mata Pelajaran</h3><span id="totalMapelLabel" style="font-size:11.5px;color:var(--text-faint);font-weight:700;"></span></div>
+    <div id="mapelManageList"></div>
+  </section>
+
   <!-- RIWAYAT -->
   <section class="screen" id="screen-riwayat">
     <div class="section-title"><h3>Riwayat Absensi</h3></div>
@@ -394,6 +437,10 @@
     <div class="info-row">
       <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
       <div><div class="t">Total Santri Terdaftar</div><div class="v" id="profilTotalSantri">0 santri</div></div>
+    </div>
+    <div class="info-row">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div><div class="t">Total Mata Pelajaran</div><div class="v" id="profilTotalMapel">0 mapel</div></div>
     </div>
     <div class="info-row">
       <div class="ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
@@ -418,7 +465,9 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 
 const STATUS_LABEL = { hadir:'Hadir', izin:'Izin', sakit:'Sakit', alpha:'Alpha' };
 let SANTRI = []; // dimuat dari Supabase, kosong sampai ada data ditambahkan
+let MAPEL = []; // dimuat dari Supabase, kosong sampai ada mata pelajaran ditambahkan
 let currentDraft = {};
+let currentMapelId = '';
 let currentScreen = 'dashboard';
 
 function todayKey(){ return new Date().toISOString().slice(0,10); }
@@ -485,30 +534,102 @@ function renderSantriManageList(){
     </div>`).join('');
 }
 
+// ---------- Supabase: Mata Pelajaran ----------
+async function loadMapelList(){
+  const { data, error } = await supabaseClient.from('mapel').select('*').order('nama', { ascending:true });
+  if(error){ console.error('Gagal memuat mata pelajaran', error); MAPEL = []; return; }
+  MAPEL = data || [];
+  const el = document.getElementById('profilTotalMapel');
+  if(el) el.textContent = MAPEL.length + ' mapel';
+}
+async function addMapel(){
+  const nama = document.getElementById('inputMapel').value.trim();
+  if(!nama){ showToast('Nama mata pelajaran wajib diisi'); return; }
+  const { error } = await supabaseClient.from('mapel').insert([{ nama }]);
+  if(error){ console.error(error); showToast('Gagal menambah mata pelajaran'); return; }
+  document.getElementById('inputMapel').value = '';
+  await loadMapelList();
+  renderMapelManageList();
+  populateMapelSelect();
+  showToast('Mata pelajaran berhasil ditambahkan');
+}
+async function deleteMapel(id){
+  if(!confirm('Hapus mata pelajaran ini? Riwayat absensi pada mata pelajaran ini juga akan terhapus.')) return;
+  await supabaseClient.from('absensi').delete().eq('mapel_id', id);
+  const { error } = await supabaseClient.from('mapel').delete().eq('id', id);
+  if(error){ console.error(error); showToast('Gagal menghapus mata pelajaran'); return; }
+  if(String(currentMapelId) === String(id)) currentMapelId = '';
+  await loadMapelList();
+  renderMapelManageList();
+  populateMapelSelect();
+  showToast('Mata pelajaran dihapus');
+}
+function renderMapelManageList(){
+  const container = document.getElementById('mapelManageList');
+  document.getElementById('totalMapelLabel').textContent = MAPEL.length + ' mapel';
+  if(MAPEL.length === 0){
+    container.innerHTML = `<div class="empty-note">Belum ada mata pelajaran. Tambahkan menggunakan formulir di atas.</div>`;
+    return;
+  }
+  container.innerHTML = MAPEL.map(m => `
+    <div class="santri-manage-item">
+      <div class="initial">${initials(m.nama)}</div>
+      <div class="info"><div class="t">${m.nama}</div></div>
+      <button class="btn-del" onclick="deleteMapel(${m.id})">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6h16z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>`).join('');
+}
+function populateMapelSelect(){
+  const sel = document.getElementById('selectMapel');
+  if(!sel) return;
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">Pilih mata pelajaran...</option>' +
+    MAPEL.map(m => `<option value="${m.id}">${m.nama}</option>`).join('');
+  if(prev && MAPEL.some(m => String(m.id) === String(prev))) sel.value = prev;
+  else currentMapelId = '';
+}
+function onMapelChange(){
+  currentMapelId = document.getElementById('selectMapel').value;
+  loadAbsensiScreen();
+}
+
 // ---------- Supabase: Absensi ----------
-async function getAbsensiByDate(tanggal){
-  const { data, error } = await supabaseClient.from('absensi').select('santri_id, status').eq('tanggal', tanggal);
+async function getAbsensiByMapel(tanggal, mapelId){
+  let q = supabaseClient.from('absensi').select('santri_id, status').eq('tanggal', tanggal);
+  q = mapelId ? q.eq('mapel_id', mapelId) : q.is('mapel_id', null);
+  const { data, error } = await q;
   if(error){ console.error('Gagal mengambil absensi', error); return {}; }
   const map = {};
   data.forEach(row => { map[row.santri_id] = row.status; });
   return map;
 }
-async function saveAbsensiByDate(tanggal, draft){
-  const before = await getAbsensiByDate(tanggal);
+async function getAbsensiRowsByDate(tanggal){
+  const { data, error } = await supabaseClient.from('absensi').select('santri_id, status, mapel_id').eq('tanggal', tanggal);
+  if(error){ console.error('Gagal mengambil absensi', error); return []; }
+  return data || [];
+}
+async function saveAbsensiByDate(tanggal, mapelId, draft){
+  const before = await getAbsensiByMapel(tanggal, mapelId);
   const removedIds = Object.keys(before).filter(id => !(id in draft));
   if(removedIds.length){
-    await supabaseClient.from('absensi').delete().eq('tanggal', tanggal).in('santri_id', removedIds);
+    await supabaseClient.from('absensi').delete().eq('tanggal', tanggal).eq('mapel_id', mapelId).in('santri_id', removedIds);
   }
-  const rows = Object.entries(draft).map(([santri_id, status]) => ({ santri_id: Number(santri_id), tanggal, status }));
+  const rows = Object.entries(draft).map(([santri_id, status]) => ({ santri_id: Number(santri_id), tanggal, mapel_id: Number(mapelId), status }));
   if(rows.length){
-    const { error } = await supabaseClient.from('absensi').upsert(rows, { onConflict: 'santri_id,tanggal' });
+    const { error } = await supabaseClient.from('absensi').upsert(rows, { onConflict: 'santri_id,tanggal,mapel_id' });
     if(error) console.error('Gagal menyimpan absensi', error);
   }
 }
-async function getRiwayatTanggal(){
-  const { data, error } = await supabaseClient.from('absensi').select('tanggal').order('tanggal', { ascending:false });
+async function getRiwayatCombos(){
+  const { data, error } = await supabaseClient.from('absensi').select('tanggal, mapel_id').order('tanggal', { ascending:false });
   if(error){ console.error('Gagal mengambil riwayat', error); return []; }
-  return [...new Set(data.map(r => r.tanggal))];
+  const seen = new Set(); const combos = [];
+  data.forEach(r => {
+    const key = r.tanggal + '|' + r.mapel_id;
+    if(!seen.has(key)){ seen.add(key); combos.push({ tanggal:r.tanggal, mapel_id:r.mapel_id }); }
+  });
+  return combos;
 }
 
 // ---------- Navigation ----------
@@ -517,25 +638,25 @@ function navigateTo(screen){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+screen).classList.add('active');
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab === screen));
-  if(screen === 'absensi') loadAbsensiScreen();
+  if(screen === 'absensi'){ populateMapelSelect(); loadAbsensiScreen(); }
   if(screen === 'santri') renderSantriManageList();
+  if(screen === 'mapel') renderMapelManageList();
   if(screen === 'riwayat') loadRiwayat();
   if(screen === 'dashboard') loadDashboard();
 }
 
 // ---------- Dashboard ----------
 async function loadDashboard(){
-  const data = await getAbsensiByDate(todayKey());
+  const rows = await getAbsensiRowsByDate(todayKey());
   const counts = { hadir:0, izin:0, sakit:0, alpha:0 };
-  Object.values(data).forEach(s=>{ if(counts[s]!==undefined) counts[s]++; });
+  rows.forEach(r => { if(counts[r.status] !== undefined) counts[r.status]++; });
   document.getElementById('statHadir').textContent = counts.hadir;
   document.getElementById('statIzin').textContent = counts.izin;
   document.getElementById('statSakit').textContent = counts.sakit;
   document.getElementById('statAlpha').textContent = counts.alpha;
 
   const list = document.getElementById('activityList');
-  const entries = Object.entries(data);
-  if(entries.length === 0){
+  if(rows.length === 0){
     list.innerHTML = `<div class="empty-note">Belum ada absensi tercatat hari ini. Ketuk "Absen Sekarang" untuk mulai.</div>`;
     return;
   }
@@ -543,16 +664,17 @@ async function loadDashboard(){
     hadir:{bg:'var(--hadir-bg)', color:'var(--hadir)'}, izin:{bg:'var(--izin-bg)', color:'var(--izin)'},
     sakit:{bg:'var(--sakit-bg)', color:'var(--sakit)'}, alpha:{bg:'var(--alpha-bg)', color:'var(--alpha)'},
   };
-  list.innerHTML = entries.slice(-6).reverse().map(([sid, status])=>{
-    const santri = SANTRI.find(x=>String(x.id)===String(sid));
+  list.innerHTML = rows.slice(-6).reverse().map(r=>{
+    const santri = SANTRI.find(x=>String(x.id)===String(r.santri_id));
     if(!santri) return '';
-    const c = iconMap[status];
+    const mapel = MAPEL.find(m=>String(m.id)===String(r.mapel_id));
+    const c = iconMap[r.status];
     return `<div class="activity-item">
       <div class="ic" style="background:${c.bg}">
         <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="${c.color}" stroke-width="1.8"/><path d="M9 12l2 2 4-4" stroke="${c.color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
-      <div class="info"><div class="t">${santri.nama}</div><div class="s">${[santri.kelas, santri.kamar].filter(Boolean).join(' · ') || '-'}</div></div>
-      <div class="riwayat-mini"><span class="${status[0]}">${STATUS_LABEL[status]}</span></div>
+      <div class="info"><div class="t">${santri.nama}</div><div class="s">${mapel ? mapel.nama + ' · ' : ''}${[santri.kelas, santri.kamar].filter(Boolean).join(' · ') || '-'}</div></div>
+      <div class="riwayat-mini"><span class="${r.status[0]}">${STATUS_LABEL[r.status]}</span></div>
     </div>`;
   }).join('');
 }
@@ -560,13 +682,22 @@ async function loadDashboard(){
 // ---------- Absensi ----------
 async function loadAbsensiScreen(){
   document.getElementById('absenDateBadge').textContent = 'Hari ini · ' + todayLabelLong();
-  const saved = await getAbsensiByDate(todayKey());
+  if(!currentMapelId){
+    currentDraft = {};
+    renderSantriList();
+    return;
+  }
+  const saved = await getAbsensiByMapel(todayKey(), currentMapelId);
   currentDraft = { ...saved };
   renderSantriList();
 }
 function renderSantriList(){
-  const q = (document.getElementById('searchSantri').value || '').toLowerCase();
   const container = document.getElementById('santriList');
+  if(!currentMapelId){
+    container.innerHTML = `<div class="empty-note" style="grid-column:1/-1;">Pilih mata pelajaran terlebih dahulu untuk mulai mengabsen.</div>`;
+    return;
+  }
+  const q = (document.getElementById('searchSantri').value || '').toLowerCase();
   if(SANTRI.length === 0){
     container.innerHTML = `<div class="empty-note" style="grid-column:1/-1;">Belum ada data santri. Tambahkan santri terlebih dahulu di menu <strong>Data Santri</strong>.</div>`;
     return;
@@ -599,8 +730,9 @@ function setStatus(sid, status){
   renderSantriList();
 }
 async function saveAbsensi(){
-  await saveAbsensiByDate(todayKey(), currentDraft);
-  showToast('Absensi hari ini tersimpan');
+  if(!currentMapelId){ showToast('Pilih mata pelajaran terlebih dahulu'); return; }
+  await saveAbsensiByDate(todayKey(), currentMapelId, currentDraft);
+  showToast('Absensi tersimpan');
   loadDashboard();
 }
 
@@ -608,21 +740,23 @@ async function saveAbsensi(){
 async function loadRiwayat(){
   const body = document.getElementById('riwayatBody');
   body.innerHTML = `<div class="empty-note">Memuat riwayat...</div>`;
-  const tanggalList = await getRiwayatTanggal();
-  if(!tanggalList || tanggalList.length === 0){
+  const combos = await getRiwayatCombos();
+  if(!combos || combos.length === 0){
     body.innerHTML = `<div class="empty-note">Belum ada riwayat absensi tersimpan.</div>`;
     return;
   }
   let html = '';
-  for(const dateStr of tanggalList){
-    const data = await getAbsensiByDate(dateStr);
+  for(const combo of combos){
+    const data = await getAbsensiByMapel(combo.tanggal, combo.mapel_id);
     if(!data || Object.keys(data).length === 0) continue;
     const counts = { hadir:0, izin:0, sakit:0, alpha:0 };
     Object.values(data).forEach(s=>{ if(counts[s]!==undefined) counts[s]++; });
-    const dateObj = new Date(dateStr+'T00:00:00');
-    const label = isNaN(dateObj) ? dateStr : dateObj.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+    const dateObj = new Date(combo.tanggal+'T00:00:00');
+    const label = isNaN(dateObj) ? combo.tanggal : dateObj.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+    const mapel = MAPEL.find(m=>String(m.id)===String(combo.mapel_id));
     html += `<div class="riwayat-card">
       <div class="top"><div class="d">${label}</div><div class="n">${Object.keys(data).length}/${SANTRI.length} tercatat</div></div>
+      <div style="margin-bottom:9px;"><span class="tag-mapel">${mapel ? mapel.nama : 'Tanpa mata pelajaran'}</span></div>
       <div class="riwayat-mini">
         <span class="h">Hadir ${counts.hadir}</span><span class="i">Izin ${counts.izin}</span>
         <span class="s">Sakit ${counts.sakit}</span><span class="a">Alpha ${counts.alpha}</span>
@@ -636,6 +770,8 @@ async function loadRiwayat(){
 async function initApp(){
   document.getElementById('topDate').textContent = todayLabelLong();
   await loadSantriList();
+  await loadMapelList();
+  populateMapelSelect();
   loadDashboard();
 }
 initApp();
