@@ -220,7 +220,10 @@
   .btn-del svg{ width:15px; height:15px; stroke: var(--alpha); }
 
   /* ---------- Mapel picker (Absensi) ---------- */
+  .picker-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+  @media (max-width:640px){ .picker-row{ grid-template-columns:1fr; } }
   .mapel-picker{ margin-bottom:16px; }
+  .picker-row .mapel-picker{ margin-bottom:0; }
   .mapel-picker label{ font-size:11.5px; font-weight:700; color: var(--text-soft); display:block; margin-bottom:6px; }
   .mapel-picker select{
     width:100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--line);
@@ -229,6 +232,27 @@
   .tag-mapel{ display:inline-block; font-size:11px; font-weight:800; background: var(--gold-soft); color:#6B5510; padding:4px 11px; border-radius:20px; }
 
   /* ---------- Riwayat ---------- */
+  .riwayat-mode-switch{ display:flex; gap:8px; margin-bottom:16px; }
+  .mode-btn{ flex:1; padding:10px 14px; border-radius:12px; border:1.5px solid var(--line); background:var(--surface); color:var(--text-soft); font-size:13px; font-weight:700; cursor:pointer; }
+  .mode-btn.active{ background:var(--primary-dark); border-color:var(--primary-dark); color:#fff; }
+  .riwayat-toggle-btn{
+    width:100%; margin-top:10px; padding:9px 10px; border-radius:10px; border:1.5px dashed var(--line);
+    background:transparent; color: var(--primary-dark); font-size:12px; font-weight:700; cursor:pointer;
+  }
+  .riwayat-detail{ margin-top:10px; border-top:1px solid var(--line); padding-top:10px; }
+  .riwayat-detail-row{
+    display:flex; align-items:center; gap:8px; padding:7px 2px; font-size:12.5px; border-bottom:1px solid var(--line);
+  }
+  .riwayat-detail-row:last-child{ border-bottom:none; }
+  .riwayat-detail-row .rd-nm{ flex:1; font-weight:700; color: var(--text); }
+  .riwayat-detail-row .rd-kls{ color: var(--text-faint); font-size:11.5px; }
+  .riwayat-detail-row .h, .riwayat-detail-row .i, .riwayat-detail-row .s, .riwayat-detail-row .a{
+    font-size:10.5px; font-weight:800; padding:3px 9px; border-radius:8px;
+  }
+  .riwayat-detail-row .h{ background: var(--hadir-bg); color: var(--hadir); }
+  .riwayat-detail-row .i{ background: var(--izin-bg); color: var(--izin); }
+  .riwayat-detail-row .s{ background: var(--sakit-bg); color: var(--sakit); }
+  .riwayat-detail-row .a{ background: var(--alpha-bg); color: var(--alpha); }
   .riwayat-card{ background: var(--surface); border:1px solid var(--line); border-radius: var(--radius-md); padding: 15px 17px; margin-bottom: 12px; }
   .riwayat-card .top{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:6px; }
   .riwayat-card .top .d{ font-weight:800; font-size:13.5px; }
@@ -239,6 +263,14 @@
   .riwayat-mini .i{ background: var(--izin-bg); color: var(--izin); }
   .riwayat-mini .s{ background: var(--sakit-bg); color: var(--sakit); }
   .riwayat-mini .a{ background: var(--alpha-bg); color: var(--alpha); }
+
+  /* ---------- Rekap ---------- */
+  .rekap-table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius: var(--radius-md); margin-top:4px; }
+  .rekap-table{ width:100%; border-collapse:collapse; font-size:12.5px; min-width:600px; }
+  .rekap-table th, .rekap-table td{ padding:9px 10px; text-align:left; border-bottom:1px solid var(--line); white-space:nowrap; }
+  .rekap-table th{ background: var(--primary-tint); color: var(--primary-dark); font-weight:800; font-size:11px; text-transform:uppercase; letter-spacing:.03em; }
+  .rekap-table tbody tr:last-child td{ border-bottom:none; }
+  .rekap-summary{ font-size:11.5px; color: var(--text-faint); font-weight:700; margin:10px 0 12px; }
 
   /* ---------- Profil ---------- */
   .info-row{
@@ -298,6 +330,10 @@
       <svg viewBox="0 0 24 24" fill="none"><path d="M3 3v5h5M3.05 13a9 9 0 106.36-8.86M12 7v5l3 3" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
       Riwayat
     </button>
+    <button class="tab" data-tab="rekap" onclick="navigateTo('rekap')">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Rekap
+    </button>
     <button class="tab" data-tab="profil" onclick="navigateTo('profil')">
       <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke-width="1.9"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7" stroke-width="1.9" stroke-linecap="round"/></svg>
       Profil
@@ -350,11 +386,19 @@
       <h3>Absensi Santri</h3>
       <span class="badge" id="absenDateBadge">Hari ini</span>
     </div>
-    <div class="mapel-picker">
-      <label>Mata Pelajaran</label>
-      <select id="selectMapel" onchange="onMapelChange()">
-        <option value="">Pilih mata pelajaran...</option>
-      </select>
+    <div class="picker-row">
+      <div class="mapel-picker">
+        <label>Mata Pelajaran</label>
+        <select id="selectMapel" onchange="onMapelChange()">
+          <option value="">Pilih mata pelajaran...</option>
+        </select>
+      </div>
+      <div class="mapel-picker">
+        <label>Kelas</label>
+        <select id="selectKelas" onchange="renderSantriList()">
+          <option value="">Semua Kelas</option>
+        </select>
+      </div>
     </div>
     <div class="search-wrap">
       <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -384,8 +428,22 @@
           <input id="inputKelas" type="text" placeholder="Contoh: Ula 1">
         </div>
         <div class="field">
-          <label>Kamar</label>
-          <input id="inputKamar" type="text" placeholder="Contoh: Kamar Al-Fatih">
+          <label>Jenis Kelamin</label>
+          <select id="inputGender">
+            <option value="">Pilih...</option>
+            <option value="Laki-laki">Laki-laki</option>
+            <option value="Perempuan">Perempuan</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid" style="grid-template-columns:1fr 2fr;">
+        <div class="field">
+          <label>Tanggal Lahir</label>
+          <input id="inputTglLahir" type="date">
+        </div>
+        <div class="field">
+          <label>Alamat</label>
+          <input id="inputAlamat" type="text" placeholder="Contoh: Ds. Suka Maju, Kec. Jatinegara, Kab. Tegal">
         </div>
       </div>
       <button class="btn-add" onclick="addSantri()">
@@ -420,7 +478,66 @@
   <!-- RIWAYAT -->
   <section class="screen" id="screen-riwayat">
     <div class="section-title"><h3>Riwayat Absensi</h3></div>
-    <div id="riwayatBody"></div>
+
+    <div class="riwayat-mode-switch">
+      <button class="mode-btn active" data-mode="tanggal" onclick="switchRiwayatMode('tanggal')">Per Tanggal</button>
+      <button class="mode-btn" data-mode="santri" onclick="switchRiwayatMode('santri')">Per Santri</button>
+    </div>
+
+    <div id="riwayatModeTanggal">
+      <div class="picker-row">
+        <div class="mapel-picker">
+          <label>Mata Pelajaran</label>
+          <select id="riwayatFilterMapel" onchange="loadRiwayat()"><option value="">Semua Mata Pelajaran</option></select>
+        </div>
+        <div class="mapel-picker">
+          <label>Kelas</label>
+          <select id="riwayatFilterKelas" onchange="loadRiwayat()"><option value="">Semua Kelas</option></select>
+        </div>
+      </div>
+      <div id="riwayatBody"></div>
+    </div>
+
+    <div id="riwayatModeSantri" style="display:none;">
+      <div class="mapel-picker">
+        <label>Pilih Santri</label>
+        <select id="riwayatSelectSantri" onchange="loadRiwayatSantri()"><option value="">Pilih santri...</option></select>
+      </div>
+      <div id="riwayatSantriBody"></div>
+    </div>
+  </section>
+
+  <!-- REKAP -->
+  <section class="screen" id="screen-rekap">
+    <div class="form-card">
+      <div class="eyebrow">Rekapan Absensi</div>
+      <h3>Pilih Periode &amp; Filter</h3>
+      <div class="form-grid" style="grid-template-columns:1fr 1fr;">
+        <div class="field">
+          <label>Dari Tanggal</label>
+          <input id="rekapDari" type="date">
+        </div>
+        <div class="field">
+          <label>Sampai Tanggal</label>
+          <input id="rekapSampai" type="date">
+        </div>
+      </div>
+      <div class="form-grid" style="grid-template-columns:1fr 1fr;">
+        <div class="field">
+          <label>Mata Pelajaran</label>
+          <select id="rekapMapel"><option value="">Semua Mata Pelajaran</option></select>
+        </div>
+        <div class="field">
+          <label>Kelas</label>
+          <select id="rekapKelas"><option value="">Semua Kelas</option></select>
+        </div>
+      </div>
+      <button class="btn-add" onclick="generateRekap()">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        Tampilkan Rekap
+      </button>
+    </div>
+    <div id="rekapResult"></div>
   </section>
 
   <!-- PROFIL -->
@@ -456,6 +573,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 <script>
 // ================== KONFIGURASI SUPABASE ==================
 const SUPABASE_URL = 'https://vrmaxmpasglfforvnbmo.supabase.co';
@@ -495,15 +614,20 @@ async function loadSantriList(){
 async function addSantri(){
   const nama = document.getElementById('inputNama').value.trim();
   const kelas = document.getElementById('inputKelas').value.trim();
-  const kamar = document.getElementById('inputKamar').value.trim();
+  const jenis_kelamin = document.getElementById('inputGender').value;
+  const tanggal_lahir = document.getElementById('inputTglLahir').value || null;
+  const alamat = document.getElementById('inputAlamat').value.trim();
   if(!nama){ showToast('Nama santri wajib diisi'); return; }
-  const { error } = await supabaseClient.from('santri').insert([{ nama, kelas, kamar }]);
+  const { error } = await supabaseClient.from('santri').insert([{ nama, kelas, jenis_kelamin, tanggal_lahir, alamat }]);
   if(error){ console.error(error); showToast('Gagal menambah santri'); return; }
   document.getElementById('inputNama').value = '';
   document.getElementById('inputKelas').value = '';
-  document.getElementById('inputKamar').value = '';
+  document.getElementById('inputGender').value = '';
+  document.getElementById('inputTglLahir').value = '';
+  document.getElementById('inputAlamat').value = '';
   await loadSantriList();
   renderSantriManageList();
+  populateKelasSelects();
   showToast('Santri berhasil ditambahkan');
 }
 async function deleteSantri(id){
@@ -512,7 +636,15 @@ async function deleteSantri(id){
   if(error){ console.error(error); showToast('Gagal menghapus santri'); return; }
   await loadSantriList();
   renderSantriManageList();
+  populateKelasSelects();
   showToast('Santri dihapus');
+}
+function formatTanggalPendek(tgl){
+  if(!tgl) return '';
+  const d = new Date(tgl+'T00:00:00');
+  if(isNaN(d)) return tgl;
+  const bulan = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
 }
 function renderSantriManageList(){
   const container = document.getElementById('santriManageList');
@@ -526,12 +658,31 @@ function renderSantriManageList(){
       <div class="initial">${initials(s.nama)}</div>
       <div class="info">
         <div class="t">${s.nama}</div>
-        <div class="s">${[s.kelas, s.kamar].filter(Boolean).join(' · ') || '-'}</div>
+        <div class="s">${[s.kelas, s.jenis_kelamin].filter(Boolean).join(' · ') || '-'}</div>
+        <div class="s">${[formatTanggalPendek(s.tanggal_lahir), s.alamat].filter(Boolean).join(' · ')}</div>
       </div>
       <button class="btn-del" onclick="deleteSantri(${s.id})">
         <svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6h16z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>`).join('');
+}
+
+// ---------- Kelas (diturunkan dari data santri) ----------
+function getKelasList(){
+  return [...new Set(SANTRI.map(s => s.kelas).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+}
+function populateKelasOptions(selectId, placeholderLabel){
+  const sel = document.getElementById(selectId);
+  if(!sel) return;
+  const prev = sel.value;
+  const list = getKelasList();
+  sel.innerHTML = `<option value="">${placeholderLabel}</option>` + list.map(k=>`<option value="${k}">${k}</option>`).join('');
+  if(prev && list.includes(prev)) sel.value = prev;
+}
+function populateKelasSelects(){
+  populateKelasOptions('selectKelas', 'Semua Kelas');
+  populateKelasOptions('rekapKelas', 'Semua Kelas');
+  populateKelasOptions('riwayatFilterKelas', 'Semua Kelas');
 }
 
 // ---------- Supabase: Mata Pelajaran ----------
@@ -580,14 +731,19 @@ function renderMapelManageList(){
       </button>
     </div>`).join('');
 }
-function populateMapelSelect(){
-  const sel = document.getElementById('selectMapel');
+function populateMapelOptions(selectId, placeholderLabel){
+  const sel = document.getElementById(selectId);
   if(!sel) return;
   const prev = sel.value;
-  sel.innerHTML = '<option value="">Pilih mata pelajaran...</option>' +
+  sel.innerHTML = `<option value="">${placeholderLabel}</option>` +
     MAPEL.map(m => `<option value="${m.id}">${m.nama}</option>`).join('');
   if(prev && MAPEL.some(m => String(m.id) === String(prev))) sel.value = prev;
-  else currentMapelId = '';
+}
+function populateMapelSelect(){
+  populateMapelOptions('selectMapel', 'Pilih mata pelajaran...');
+  if(!document.getElementById('selectMapel').value) currentMapelId = '';
+  populateMapelOptions('rekapMapel', 'Semua Mata Pelajaran');
+  populateMapelOptions('riwayatFilterMapel', 'Semua Mata Pelajaran');
 }
 function onMapelChange(){
   currentMapelId = document.getElementById('selectMapel').value;
@@ -621,8 +777,10 @@ async function saveAbsensiByDate(tanggal, mapelId, draft){
     if(error) console.error('Gagal menyimpan absensi', error);
   }
 }
-async function getRiwayatCombos(){
-  const { data, error } = await supabaseClient.from('absensi').select('tanggal, mapel_id').order('tanggal', { ascending:false });
+async function getRiwayatCombos(mapelId){
+  let q = supabaseClient.from('absensi').select('tanggal, mapel_id').order('tanggal', { ascending:false });
+  if(mapelId) q = q.eq('mapel_id', mapelId);
+  const { data, error } = await q;
   if(error){ console.error('Gagal mengambil riwayat', error); return []; }
   const seen = new Set(); const combos = [];
   data.forEach(r => {
@@ -638,10 +796,11 @@ function navigateTo(screen){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+screen).classList.add('active');
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab === screen));
-  if(screen === 'absensi'){ populateMapelSelect(); loadAbsensiScreen(); }
+  if(screen === 'absensi'){ populateMapelSelect(); populateKelasSelects(); loadAbsensiScreen(); }
   if(screen === 'santri') renderSantriManageList();
   if(screen === 'mapel') renderMapelManageList();
-  if(screen === 'riwayat') loadRiwayat();
+  if(screen === 'riwayat'){ populateMapelSelect(); populateKelasSelects(); populateRiwayatSantriSelect(); loadRiwayat(); }
+  if(screen === 'rekap'){ populateMapelSelect(); populateKelasSelects(); renderRekapTable(); }
   if(screen === 'dashboard') loadDashboard();
 }
 
@@ -673,7 +832,7 @@ async function loadDashboard(){
       <div class="ic" style="background:${c.bg}">
         <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="${c.color}" stroke-width="1.8"/><path d="M9 12l2 2 4-4" stroke="${c.color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
-      <div class="info"><div class="t">${santri.nama}</div><div class="s">${mapel ? mapel.nama + ' · ' : ''}${[santri.kelas, santri.kamar].filter(Boolean).join(' · ') || '-'}</div></div>
+      <div class="info"><div class="t">${santri.nama}</div><div class="s">${mapel ? mapel.nama + ' · ' : ''}${santri.kelas || '-'}</div></div>
       <div class="riwayat-mini"><span class="${r.status[0]}">${STATUS_LABEL[r.status]}</span></div>
     </div>`;
   }).join('');
@@ -698,11 +857,13 @@ function renderSantriList(){
     return;
   }
   const q = (document.getElementById('searchSantri').value || '').toLowerCase();
+  const kelasFilter = document.getElementById('selectKelas') ? document.getElementById('selectKelas').value : '';
   if(SANTRI.length === 0){
     container.innerHTML = `<div class="empty-note" style="grid-column:1/-1;">Belum ada data santri. Tambahkan santri terlebih dahulu di menu <strong>Data Santri</strong>.</div>`;
     return;
   }
-  const filtered = SANTRI.filter(s => s.nama.toLowerCase().includes(q));
+  let filtered = SANTRI.filter(s => s.nama.toLowerCase().includes(q));
+  if(kelasFilter) filtered = filtered.filter(s => s.kelas === kelasFilter);
   if(filtered.length === 0){
     container.innerHTML = `<div class="empty-note" style="grid-column:1/-1;">Santri tidak ditemukan.</div>`;
     return;
@@ -712,7 +873,7 @@ function renderSantriList(){
     return `<div class="santri-card">
       <div class="top">
         <div class="initial">${initials(s.nama)}</div>
-        <div><div class="nm">${s.nama}</div><div class="kls">${[s.kelas, s.kamar].filter(Boolean).join(' · ') || '-'}</div></div>
+        <div><div class="nm">${s.nama}</div><div class="kls">${s.kelas || '-'}</div></div>
       </div>
       <div class="status-btns">
         <button data-s="hadir" class="${active==='hadir'?'active':''}" onclick="setStatus(${s.id},'hadir')">Hadir</button>
@@ -737,33 +898,215 @@ async function saveAbsensi(){
 }
 
 // ---------- Riwayat ----------
+function switchRiwayatMode(mode){
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  document.getElementById('riwayatModeTanggal').style.display = mode === 'tanggal' ? '' : 'none';
+  document.getElementById('riwayatModeSantri').style.display = mode === 'santri' ? '' : 'none';
+  if(mode === 'santri'){ populateRiwayatSantriSelect(); loadRiwayatSantri(); }
+}
+function populateRiwayatSantriSelect(){
+  const sel = document.getElementById('riwayatSelectSantri');
+  if(!sel) return;
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">Pilih santri...</option>' +
+    SANTRI.map(s => `<option value="${s.id}">${s.nama}${s.kelas ? ' - ' + s.kelas : ''}</option>`).join('');
+  if(prev && SANTRI.some(s => String(s.id) === String(prev))) sel.value = prev;
+}
+async function loadRiwayatSantri(){
+  const sid = document.getElementById('riwayatSelectSantri').value;
+  const body = document.getElementById('riwayatSantriBody');
+  if(!sid){ body.innerHTML = `<div class="empty-note">Pilih santri untuk melihat riwayat absensinya.</div>`; return; }
+  body.innerHTML = `<div class="empty-note">Memuat riwayat...</div>`;
+  const { data, error } = await supabaseClient.from('absensi').select('tanggal, status, mapel_id').eq('santri_id', sid).order('tanggal', { ascending:false });
+  if(error){ console.error('Gagal mengambil riwayat santri', error); body.innerHTML = `<div class="empty-note">Gagal memuat riwayat.</div>`; return; }
+  if(!data || data.length === 0){ body.innerHTML = `<div class="empty-note">Belum ada riwayat absensi untuk santri ini.</div>`; return; }
+  const santri = SANTRI.find(s => String(s.id) === String(sid));
+  const counts = { hadir:0, izin:0, sakit:0, alpha:0 };
+  data.forEach(r => { if(counts[r.status] !== undefined) counts[r.status]++; });
+  const rowsHtml = data.map(r=>{
+    const mapel = MAPEL.find(m => String(m.id) === String(r.mapel_id));
+    const dateObj = new Date(r.tanggal+'T00:00:00');
+    const label = isNaN(dateObj) ? r.tanggal : dateObj.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
+    return `<tr><td>${label}</td><td>${mapel ? mapel.nama : '-'}</td><td><span class="${r.status[0]}">${STATUS_LABEL[r.status]}</span></td></tr>`;
+  }).join('');
+  body.innerHTML = `
+    <div class="rekap-summary">${santri ? santri.nama : ''}${santri && santri.kelas ? ' · ' + santri.kelas : ''} &middot; ${data.length} catatan</div>
+    <div class="riwayat-mini" style="margin-bottom:14px;">
+      <span class="h">Hadir ${counts.hadir}</span><span class="i">Izin ${counts.izin}</span>
+      <span class="s">Sakit ${counts.sakit}</span><span class="a">Alpha ${counts.alpha}</span>
+    </div>
+    <div class="rekap-table-wrap">
+      <table class="rekap-table">
+        <thead><tr><th>Tanggal</th><th>Mata Pelajaran</th><th>Status</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>`;
+}
+function toggleRiwayatDetail(id){
+  const el = document.getElementById(id);
+  const btn = document.getElementById(id + '_btn');
+  if(!el) return;
+  const isHidden = el.style.display === 'none';
+  el.style.display = isHidden ? 'block' : 'none';
+  if(btn) btn.textContent = isHidden ? 'Sembunyikan Detail per Santri ▴' : 'Lihat Detail per Santri ▾';
+}
 async function loadRiwayat(){
   const body = document.getElementById('riwayatBody');
   body.innerHTML = `<div class="empty-note">Memuat riwayat...</div>`;
-  const combos = await getRiwayatCombos();
+  const mapelFilter = document.getElementById('riwayatFilterMapel') ? document.getElementById('riwayatFilterMapel').value : '';
+  const kelasFilter = document.getElementById('riwayatFilterKelas') ? document.getElementById('riwayatFilterKelas').value : '';
+  const combos = await getRiwayatCombos(mapelFilter);
   if(!combos || combos.length === 0){
     body.innerHTML = `<div class="empty-note">Belum ada riwayat absensi tersimpan.</div>`;
     return;
   }
+  const kelasIds = kelasFilter ? new Set(SANTRI.filter(s => s.kelas === kelasFilter).map(s => String(s.id))) : null;
+  const totalSantri = kelasIds ? kelasIds.size : SANTRI.length;
+  const adaFilter = Boolean(mapelFilter || kelasFilter);
   let html = '';
+  let idx = 0;
   for(const combo of combos){
-    const data = await getAbsensiByMapel(combo.tanggal, combo.mapel_id);
+    let data = await getAbsensiByMapel(combo.tanggal, combo.mapel_id);
+    if(kelasIds){
+      data = Object.fromEntries(Object.entries(data).filter(([sid]) => kelasIds.has(String(sid))));
+    }
     if(!data || Object.keys(data).length === 0) continue;
+    idx++;
     const counts = { hadir:0, izin:0, sakit:0, alpha:0 };
     Object.values(data).forEach(s=>{ if(counts[s]!==undefined) counts[s]++; });
     const dateObj = new Date(combo.tanggal+'T00:00:00');
     const label = isNaN(dateObj) ? combo.tanggal : dateObj.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
     const mapel = MAPEL.find(m=>String(m.id)===String(combo.mapel_id));
+
+    const detailRows = Object.entries(data)
+      .map(([sid, status]) => ({ santri: SANTRI.find(s => String(s.id) === sid), status }))
+      .filter(r => r.santri)
+      .sort((a,b) => a.santri.nama.localeCompare(b.santri.nama))
+      .map(r => `<div class="riwayat-detail-row">
+          <span class="rd-nm">${r.santri.nama}</span>
+          <span class="rd-kls">${r.santri.kelas || '-'}</span>
+          <span class="${r.status[0]}">${STATUS_LABEL[r.status]}</span>
+        </div>`).join('');
+
+    const detailId = `riwayatDetail_${idx}`;
     html += `<div class="riwayat-card">
-      <div class="top"><div class="d">${label}</div><div class="n">${Object.keys(data).length}/${SANTRI.length} tercatat</div></div>
+      <div class="top"><div class="d">${label}</div><div class="n">${Object.keys(data).length}/${totalSantri} tercatat</div></div>
       <div style="margin-bottom:9px;"><span class="tag-mapel">${mapel ? mapel.nama : 'Tanpa mata pelajaran'}</span></div>
       <div class="riwayat-mini">
         <span class="h">Hadir ${counts.hadir}</span><span class="i">Izin ${counts.izin}</span>
         <span class="s">Sakit ${counts.sakit}</span><span class="a">Alpha ${counts.alpha}</span>
       </div>
+      <button class="riwayat-toggle-btn" id="${detailId}_btn" onclick="toggleRiwayatDetail('${detailId}')">
+        ${adaFilter ? 'Sembunyikan Detail per Santri ▴' : 'Lihat Detail per Santri ▾'}
+      </button>
+      <div class="riwayat-detail" id="${detailId}" style="display:${adaFilter ? 'block' : 'none'};">${detailRows}</div>
     </div>`;
   }
-  body.innerHTML = html || `<div class="empty-note">Belum ada riwayat absensi tersimpan.</div>`;
+  body.innerHTML = html || `<div class="empty-note">Tidak ada riwayat untuk filter ini.</div>`;
+}
+
+// ---------- Rekap ----------
+let lastRekapData = null;
+async function generateRekap(){
+  const dari = document.getElementById('rekapDari').value;
+  const sampai = document.getElementById('rekapSampai').value;
+  if(!dari || !sampai){ showToast('Pilih tanggal dari dan sampai dulu'); return; }
+  if(dari > sampai){ showToast('Tanggal "Dari" harus sebelum "Sampai"'); return; }
+  const mapelId = document.getElementById('rekapMapel').value;
+  const kelas = document.getElementById('rekapKelas').value;
+
+  const container = document.getElementById('rekapResult');
+  container.innerHTML = `<div class="empty-note">Memuat rekap...</div>`;
+
+  let q = supabaseClient.from('absensi').select('santri_id, status, mapel_id').gte('tanggal', dari).lte('tanggal', sampai);
+  if(mapelId) q = q.eq('mapel_id', mapelId);
+  const { data, error } = await q;
+  if(error){ console.error('Gagal mengambil data rekap', error); container.innerHTML = `<div class="empty-note">Gagal memuat data rekap.</div>`; return; }
+
+  let rows = data || [];
+  if(kelas){
+    const idsInKelas = new Set(SANTRI.filter(s => s.kelas === kelas).map(s => String(s.id)));
+    rows = rows.filter(r => idsInKelas.has(String(r.santri_id)));
+  }
+
+  const agg = {};
+  rows.forEach(r=>{
+    const sid = String(r.santri_id);
+    if(!agg[sid]) agg[sid] = { hadir:0, izin:0, sakit:0, alpha:0 };
+    if(agg[sid][r.status] !== undefined) agg[sid][r.status]++;
+  });
+
+  lastRekapData = { dari, sampai, mapelId, kelas, agg };
+  renderRekapTable();
+}
+function renderRekapTable(){
+  const container = document.getElementById('rekapResult');
+  if(!lastRekapData){ container.innerHTML = ''; return; }
+  const { dari, sampai, agg, kelas } = lastRekapData;
+  let list = SANTRI.slice();
+  if(kelas) list = list.filter(s => s.kelas === kelas);
+  if(list.length === 0){
+    container.innerHTML = `<div class="empty-note">Tidak ada data santri untuk kriteria ini.</div>`;
+    return;
+  }
+  const rowsHtml = list.map((s,i)=>{
+    const c = agg[String(s.id)] || { hadir:0, izin:0, sakit:0, alpha:0 };
+    const total = c.hadir + c.izin + c.sakit + c.alpha;
+    const persen = total ? Math.round((c.hadir/total)*100) : 0;
+    return `<tr>
+      <td>${i+1}</td><td>${s.nama}</td><td>${s.kelas || '-'}</td>
+      <td>${c.hadir}</td><td>${c.izin}</td><td>${c.sakit}</td><td>${c.alpha}</td>
+      <td>${persen}%</td>
+    </tr>`;
+  }).join('');
+  container.innerHTML = `
+    <div class="rekap-summary">Periode ${formatTanggalPendek(dari)} &ndash; ${formatTanggalPendek(sampai)} &middot; ${list.length} santri</div>
+    <div class="rekap-table-wrap">
+      <table class="rekap-table">
+        <thead><tr><th>No</th><th>Nama</th><th>Kelas</th><th>Hadir</th><th>Izin</th><th>Sakit</th><th>Alpha</th><th>% Hadir</th></tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
+    <button class="btn-add" style="margin-top:16px;" onclick="downloadRekapPDF()">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Download PDF
+    </button>`;
+}
+function downloadRekapPDF(){
+  if(!lastRekapData){ showToast('Tampilkan rekap terlebih dahulu'); return; }
+  const { dari, sampai, mapelId, kelas, agg } = lastRekapData;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const mapelNama = mapelId ? ((MAPEL.find(m => String(m.id) === String(mapelId)) || {}).nama || '-') : 'Semua Mata Pelajaran';
+  const kelasNama = kelas || 'Semua Kelas';
+
+  doc.setFontSize(13);
+  doc.text('Rekapan Absensi Santri', 14, 16);
+  doc.setFontSize(10);
+  doc.text('Pondok Pesantren Al-Adalah', 14, 22);
+  doc.text(`Periode: ${formatTanggalPendek(dari)} - ${formatTanggalPendek(sampai)}`, 14, 28);
+  doc.text(`Mata Pelajaran: ${mapelNama}`, 14, 33);
+  doc.text(`Kelas: ${kelasNama}`, 14, 38);
+
+  let list = SANTRI.slice();
+  if(kelas) list = list.filter(s => s.kelas === kelas);
+  const body = list.map((s,i)=>{
+    const c = agg[String(s.id)] || { hadir:0, izin:0, sakit:0, alpha:0 };
+    const total = c.hadir + c.izin + c.sakit + c.alpha;
+    const persen = total ? Math.round((c.hadir/total)*100) : 0;
+    return [i+1, s.nama, s.kelas || '-', c.hadir, c.izin, c.sakit, c.alpha, persen + '%'];
+  });
+
+  doc.autoTable({
+    startY: 44,
+    head: [['No','Nama Santri','Kelas','Hadir','Izin','Sakit','Alpha','% Hadir']],
+    body,
+    styles: { fontSize:9 },
+    headStyles: { fillColor:[11,79,63], textColor:255 },
+    alternateRowStyles: { fillColor:[247,245,238] },
+  });
+
+  doc.save(`rekap-absensi_${dari}_sd_${sampai}.pdf`);
 }
 
 // ---------- Init ----------
@@ -772,6 +1115,7 @@ async function initApp(){
   await loadSantriList();
   await loadMapelList();
   populateMapelSelect();
+  populateKelasSelects();
   loadDashboard();
 }
 initApp();
